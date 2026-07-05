@@ -1,0 +1,6 @@
+site/test
+site/data/leads
+prototype
+docs
+.env
+*.log
