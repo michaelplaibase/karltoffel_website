@@ -1,0 +1,155 @@
+:root{
+  --brun:#4C3718; --gul:#FFF87B; --ivory:#FFFFF0; --bronze:#86612A;
+  --roed:#CC4B37; --graa:#CACACA; --panel:#5a4322;
+  /* Display-fonten er proprietaer (Adobe "snaga-unicase-display"). Indtil den
+     er licenseret til produktions-domaenet (eller erstattet af en fri font),
+     falder vi tilbage til DM Sans. Se README. */
+  --display:"DM Sans",system-ui,sans-serif;
+  --body:"DM Sans",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);background:var(--brun);color:var(--ivory);min-height:100vh;line-height:1.5}
+img,svg{display:block;max-width:100%}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+a{color:var(--gul)}
+:focus-visible{outline:3px solid var(--gul);outline-offset:2px;border-radius:4px}
+
+.visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.skip-link{position:absolute;left:-999px;top:8px;background:var(--gul);color:var(--brun);padding:10px 16px;border-radius:8px;z-index:200}
+.skip-link:focus{left:8px}
+
+/* HEADER */
+.site-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 24px;max-width:1040px;margin:0 auto}
+.logo{width:190px}
+.logo-svg path,.logo-svg polygon{fill:var(--gul)}
+.steps-indicator ol{display:flex;gap:8px;list-style:none}
+.steps-indicator li{width:26px;height:5px;border-radius:99px;background:#3a2a12}
+.steps-indicator li.done{background:var(--bronze)}
+.steps-indicator li.current{background:var(--gul)}
+
+/* MAIN + STEP */
+main{max-width:1040px;margin:0 auto;padding:0 24px 140px}
+.step{display:block;animation:stepin .4s ease both}
+.step[hidden]{display:none}
+@keyframes stepin{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .step{animation:none}
+  *{transition:none!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
+}
+
+/* STEP 1 HERO */
+.hero{padding:8vh 0 10vh;text-align:center}
+.hero h1{font-family:var(--display);font-weight:700;font-size:clamp(34px,6vw,62px);line-height:1.04;color:var(--gul)}
+.hero .sub{margin:18px auto 0;max-width:520px;font-size:18px;opacity:.92}
+.adr-wrap{max-width:640px;margin:40px auto 0;text-align:left}
+.field-label{display:block;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--gul);margin:0 0 8px 4px}
+.combobox{position:relative}
+#adr-input{width:100%;padding:20px 22px;font-size:19px;border:0;border-radius:14px;background:var(--ivory);color:var(--brun)}
+#adr-input::placeholder{color:#6f6446}
+.adr-list{position:absolute;left:0;right:0;top:calc(100% + 8px);background:var(--ivory);color:var(--brun);border-radius:14px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.35);z-index:30;list-style:none}
+.adr-list[hidden]{display:none}
+.adr-list li{margin:0}
+.adr-list button{display:block;width:100%;text-align:left;padding:13px 20px;background:none;border:0;font-size:16px;color:var(--brun)}
+.adr-list button:hover,.adr-list button.active{background:var(--gul)}
+.field-note{margin:14px 4px 0;font-size:13px;color:var(--gul);opacity:.9;min-height:1.2em}
+
+/* STEP 2 VERIFY */
+.verify{padding:6vh 0;text-align:center}
+.verify h2{font-family:var(--display);font-size:clamp(26px,4vw,40px);color:var(--gul)}
+.verify-adr{margin-top:8px;font-size:18px;font-weight:700}
+.verify-card{position:relative;max-width:600px;margin:26px auto 0;border-radius:18px;overflow:hidden;background:var(--ivory)}
+.verify-illu{width:100%;height:auto}
+.verify-coords{color:var(--bronze);font-size:12.5px;padding:8px 14px;text-align:left}
+.verify-note{margin:16px auto 0;max-width:520px;font-size:13.5px;opacity:.75}
+.btn-row{display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap}
+
+/* BUTTONS */
+.btn{border:0;border-radius:12px;padding:16px 28px;font-size:17px;font-weight:700}
+.btn-primary{background:var(--gul);color:var(--brun)}
+.btn-primary:hover{filter:brightness(1.05)}
+.btn-primary:disabled{opacity:.6;cursor:progress}
+.btn-ghost{background:transparent;color:var(--ivory);border:2px solid var(--bronze)}
+.btn-cta{background:var(--brun);color:var(--gul);border:0;border-radius:12px;padding:15px 26px;font-size:17px;font-weight:700}
+
+/* STEP 3 LOSNING */
+.losning{padding:24px 0 0}
+.topbar{position:sticky;top:12px;z-index:40;background:var(--ivory);color:var(--brun);border-radius:18px;padding:18px 22px;box-shadow:0 14px 34px rgba(0,0,0,.3)}
+.topbar-adr{display:flex;align-items:center;gap:8px;font-weight:700;font-size:17px}
+.pin{width:16px;height:16px;flex:none;color:var(--brun)}
+.estimat-note{font-size:12.5px;color:var(--bronze);margin-top:10px}
+.regnestrimmel{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid #e4dfc8}
+.regnestrimmel b{display:block;font-size:12px;color:var(--bronze);font-weight:500}
+.regnestrimmel span{font-size:23px;font-weight:700}
+.moms-note{font-size:12px;color:var(--bronze);margin-top:10px}
+.rows-intro{margin:26px 4px 12px;font-size:15px;color:var(--gul)}
+.rows{display:flex;flex-direction:column;gap:12px}
+.row{display:grid;grid-template-columns:auto 1fr auto auto;gap:16px;align-items:center;background:var(--panel);border-radius:16px;padding:16px 18px;transition:opacity .2s}
+.row.off{opacity:.5}
+.row .chk{width:24px;height:24px;accent-color:var(--gul)}
+.row .navn b{font-size:17px}
+.row .navn small{display:block;font-size:12.5px;opacity:.78;margin-top:2px}
+.row .navn .qty-warn{color:var(--gul);font-weight:700}
+.qty{display:flex;align-items:center;gap:6px;font-size:13px}
+.qty input{width:70px;padding:7px 8px;border-radius:8px;border:0;background:var(--ivory);color:var(--brun);font-size:14px;text-align:right}
+.freq{display:flex;align-items:center;gap:10px;justify-self:end}
+.freq button{width:34px;height:34px;border-radius:10px;border:0;background:var(--gul);color:var(--brun);font-size:19px;font-weight:700;line-height:1}
+.freq button:disabled{opacity:.35;cursor:default}
+.freq .fv{min-width:78px;text-align:center;font-size:13.5px}
+.row .pris{justify-self:end;text-align:right;min-width:112px}
+.row .pris b{font-size:17px}
+.row .pris small{display:block;font-size:11.5px;opacity:.72}
+.row .pris.inactive b{opacity:.5}
+.unpriced-note{margin:26px 4px 0;font-size:12.5px;opacity:.72}
+@media (max-width:720px){
+  .row{grid-template-columns:auto 1fr;grid-template-areas:"chk navn" "chk qty" "freq pris"}
+  .row .chk{grid-area:chk;align-self:start;margin-top:4px}
+  .row .navn{grid-area:navn}.row .qty{grid-area:qty}
+  .row .freq{grid-area:freq;justify-self:start}.row .pris{grid-area:pris}
+  .regnestrimmel{grid-template-columns:1fr 1fr}
+}
+
+/* CTA BAR */
+.cta-bar{position:fixed;left:0;right:0;bottom:0;background:var(--gul);color:var(--brun);z-index:60}
+.cta-bar[hidden]{display:none}
+.cta-inner{max-width:1040px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 24px}
+.cta-sum b{font-size:24px}
+.cta-sum small{display:block;font-size:12px}
+
+/* STEP 4 KONTAKT */
+.kontakt{max-width:560px;margin:0 auto;padding:6vh 0}
+.kontakt h2{font-family:var(--display);color:var(--gul);font-size:clamp(26px,4vw,38px)}
+.kontakt>p{margin-top:10px;opacity:.9}
+.form-field{margin-top:18px}
+.form-field label{display:block;margin-bottom:6px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--gul)}
+.form-field .opt{text-transform:none;letter-spacing:0;opacity:.7}
+.kontakt input,.kontakt textarea{width:100%;padding:15px 16px;border-radius:12px;border:0;background:var(--ivory);color:var(--brun);font-size:16px}
+.kontakt input[aria-invalid="true"]{outline:2px solid var(--roed)}
+.consent{margin-top:22px}
+.checkbox{display:flex;gap:12px;align-items:flex-start;text-transform:none;letter-spacing:0;font-size:14px;color:var(--ivory)}
+.checkbox input{width:22px;height:22px;flex:none;accent-color:var(--gul);margin-top:1px}
+.err{color:var(--ivory);background:var(--roed);border-radius:8px;padding:8px 12px;margin-top:8px;font-size:13.5px}
+.err[hidden]{display:none}
+.form-err{margin-top:16px}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+/* STEP 5 TAK */
+.tak{max-width:560px;margin:0 auto;padding:10vh 0;text-align:center}
+.tak h2{font-family:var(--display);color:var(--gul);font-size:clamp(30px,5vw,46px)}
+.tak>p{margin-top:14px;font-size:17px;opacity:.92}
+.opsum{margin-top:26px;background:var(--panel);border-radius:16px;padding:18px;text-align:left;font-size:14.5px;line-height:1.7}
+.tak-ref{margin-top:14px;font-size:13px;opacity:.75}
+
+/* DIG OVERLAY */
+.dig{position:fixed;inset:0;background:var(--brun);display:flex;align-items:center;justify-content:center;z-index:100}
+.dig[hidden]{display:none}
+.dig-inner{text-align:center;padding:24px;max-width:480px}
+.spade{width:74px;height:74px;margin:0 auto 26px;animation:digbob 1s ease-in-out infinite}
+@keyframes digbob{0%,100%{transform:rotate(-9deg) translateY(0)}50%{transform:rotate(7deg) translateY(9px)}}
+.dig-msg{font-family:var(--display);font-size:26px;color:var(--gul);min-height:1.4em}
+.dig-adr{margin-top:10px;font-size:15px;opacity:.8}
+.dig-bar{height:6px;background:#3a2a12;border-radius:99px;margin-top:26px;overflow:hidden}
+.dig-fill{height:100%;width:0;background:var(--gul);border-radius:99px;transition:width .5s ease}
