@@ -1,0 +1,4 @@
+test
+data/leads
+.env
+*.log

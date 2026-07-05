@@ -28,8 +28,9 @@ export const config = {
   addressProvider: process.env.ADDRESS_PROVIDER || 'dawa',
   adressevaelgerToken: process.env.ADRESSEVAELGER_TOKEN || '',
 
-  // Lead-modtagelse
-  leadStoreDir: process.env.LEAD_STORE_DIR || join(ROOT, 'data', 'leads'),
+  // Lead-modtagelse. Paa Vercel er projekt-filsystemet read-only; kun /tmp kan
+  // skrives (efemert - fint til QA/demo). Default derfor til /tmp der.
+  leadStoreDir: process.env.LEAD_STORE_DIR || (process.env.VERCEL ? '/tmp/leads' : join(ROOT, 'data', 'leads')),
   leadEmailTo: process.env.LEAD_EMAIL_TO || '',
   leadEmailFrom: process.env.LEAD_EMAIL_FROM || 'tilbud@karltoffel.dk',
 
