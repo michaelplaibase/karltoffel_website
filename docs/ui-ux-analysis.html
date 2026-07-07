@@ -1,0 +1,698 @@
+<style>
+  :root{
+    /* Brand */
+    --brun:#4C3718; --brun-lys:#5A4322; --brun-moerk:#3A2A12;
+    --gul:#FFF87B; --ivory:#FFFFF0; --ivory-dim:#E4DFC8; --ivory-mut:#B7A98A;
+    --bronze:#86612A; --roed:#CC4B37;
+    /* Severity ramp derived from brand */
+    --sev-crit:#E0503C; --sev-high:#E8A33D; --sev-med:#C9A24B; --sev-low:#8C9B74;
+    /* Tokens (dark / brand world = default) */
+    --ground:var(--brun); --panel:var(--brun-lys); --panel-2:#63492680;
+    --ink:var(--ivory); --ink-soft:#D8CDB0; --ink-mut:var(--ivory-mut);
+    --accent:var(--gul); --rule:#6B512A; --rule-soft:#5A432255;
+    --card-shadow:0 22px 46px rgba(0,0,0,.34);
+    --code-bg:#2E210F; --code-ink:#F3E9CE;
+
+    --display:"Helvetica Neue Condensed","Arial Narrow",-apple-system,system-ui,sans-serif;
+    --body:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    --mono:"SF Mono","JetBrains Mono",ui-monospace,"Cascadia Code",Menlo,monospace;
+    --measure:66ch;
+    --maxw:940px;
+  }
+  :root[data-theme="light"]{
+    --ground:#FBF7EC; --panel:#FFFFFF; --panel-2:#F3ECD9;
+    --ink:#332512; --ink-soft:#5B4A2E; --ink-mut:#8A7A5A;
+    --accent:#8A5A12; --rule:#E3D8BE; --rule-soft:#EDE4CE;
+    --card-shadow:0 18px 40px rgba(76,55,24,.12);
+    --code-bg:#2E210F; --code-ink:#F3E9CE;
+    --sev-crit:#C33A26; --sev-high:#B0781F; --sev-med:#9A7A2C; --sev-low:#5F7047;
+  }
+  @media (prefers-color-scheme:light){
+    :root{
+      --ground:#FBF7EC; --panel:#FFFFFF; --panel-2:#F3ECD9;
+      --ink:#332512; --ink-soft:#5B4A2E; --ink-mut:#8A7A5A;
+      --accent:#8A5A12; --rule:#E3D8BE; --rule-soft:#EDE4CE;
+      --card-shadow:0 18px 40px rgba(76,55,24,.12);
+      --sev-crit:#C33A26; --sev-high:#B0781F; --sev-med:#9A7A2C; --sev-low:#5F7047;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#4C3718; --panel:#5A4322; --panel-2:#63492680;
+    --ink:#FFFFF0; --ink-soft:#D8CDB0; --ink-mut:#B7A98A;
+    --accent:#FFF87B; --rule:#6B512A; --rule-soft:#5A432255;
+    --card-shadow:0 22px 46px rgba(0,0,0,.34);
+    --sev-crit:#E0503C; --sev-high:#E8A33D; --sev-med:#C9A24B; --sev-low:#8C9B74;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);
+       font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;letter-spacing:.002em}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  a{color:inherit}
+  ::selection{background:var(--accent);color:var(--brun)}
+
+  /* ---- Eyebrows / display type ---- */
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+           color:var(--accent);font-weight:600}
+  h1,h2,h3{font-family:var(--display);font-weight:800;text-wrap:balance;line-height:1.02;
+           letter-spacing:-.005em;text-transform:uppercase;margin:0}
+  h1{font-size:clamp(40px,7vw,78px)}
+  h2{font-size:clamp(26px,3.6vw,40px);letter-spacing:.01em}
+  h3{font-size:20px;letter-spacing:.03em}
+
+  /* ---- Hero ---- */
+  .hero{padding:clamp(56px,10vh,120px) 0 44px;border-bottom:1px solid var(--rule)}
+  .hero .kicker{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:26px}
+  .spud{width:30px;height:30px;flex:none}
+  .hero h1{color:var(--accent);margin:8px 0 0}
+  .hero .lede{max-width:var(--measure);margin:22px 0 0;font-size:clamp(17px,2vw,20px);
+              line-height:1.55;color:var(--ink-soft)}
+  .meta{display:flex;gap:28px;flex-wrap:wrap;margin-top:34px;font-family:var(--mono);
+        font-size:12.5px;color:var(--ink-mut);letter-spacing:.04em}
+  .meta b{display:block;color:var(--accent);font-weight:600;letter-spacing:.12em;
+          text-transform:uppercase;font-size:11px;margin-bottom:4px}
+
+  section{padding:56px 0}
+  section + section{border-top:1px solid var(--rule-soft)}
+  .sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:8px}
+  .sec-head .num{font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:.1em}
+  .sec-intro{max-width:var(--measure);color:var(--ink-soft);margin:14px 0 0}
+
+  /* ---- Overall verdict band ---- */
+  .verdict{background:var(--panel);border-radius:18px;padding:30px 32px;box-shadow:var(--card-shadow);
+           margin-top:30px;border:1px solid var(--rule-soft)}
+  .verdict h3{color:var(--accent)}
+  .verdict ol{margin:18px 0 0;padding-left:0;list-style:none;counter-reset:v;display:grid;gap:16px}
+  .verdict ol li{position:relative;padding-left:44px;counter-increment:v;color:var(--ink-soft)}
+  .verdict ol li::before{content:counter(v);position:absolute;left:0;top:-2px;width:30px;height:30px;
+       display:grid;place-items:center;border-radius:8px;background:var(--brun-moerk);color:var(--accent);
+       font-family:var(--mono);font-size:13px;font-weight:600}
+  :root[data-theme="light"] .verdict ol li::before,
+  @media (prefers-color-scheme:light){.verdict ol li::before{background:#F0E7CF;color:#8A5A12}}
+  .verdict ol li b{color:var(--ink)}
+
+  /* ---- Scorecard ---- */
+  .scorewrap{overflow-x:auto;margin-top:30px;border-radius:16px}
+  table.score{width:100%;border-collapse:collapse;font-size:15px;min-width:520px}
+  table.score th,table.score td{text-align:left;padding:13px 18px;border-bottom:1px solid var(--rule-soft)}
+  table.score thead th{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+       color:var(--ink-mut);font-weight:600;border-bottom:1px solid var(--rule)}
+  table.score tbody tr:hover{background:var(--rule-soft)}
+  table.score .cat{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--ink-mut);text-transform:uppercase}
+  table.score .principle{font-weight:600}
+  table.score td.g{text-align:right;font-variant-numeric:tabular-nums}
+
+  /* ---- Grade badge ---- */
+  .grade{display:inline-flex;align-items:center;justify-content:center;min-width:46px;height:30px;
+         padding:0 10px;border-radius:8px;font-family:var(--mono);font-weight:700;font-size:15px;
+         letter-spacing:.02em;border:1.5px solid;background:transparent}
+  .g-a{color:#8FBF6A;border-color:#8FBF6A66}
+  .g-b{color:#C9C05A;border-color:#C9C05A66}
+  .g-c{color:var(--sev-high);border-color:#E8A33D66}
+  .g-d{color:var(--sev-crit);border-color:#E0503C66}
+  :root[data-theme="light"] .g-a,@media (prefers-color-scheme:light){.g-a{color:#4F7A2E;border-color:#4F7A2E55}}
+  :root[data-theme="light"] .g-b,@media (prefers-color-scheme:light){.g-b{color:#8A7A18;border-color:#8A7A1855}}
+
+  /* ---- Principle cards ---- */
+  .cards{display:grid;gap:22px;margin-top:30px}
+  .pcard{background:var(--panel);border-radius:18px;padding:26px 28px;box-shadow:var(--card-shadow);
+         border:1px solid var(--rule-soft)}
+  .pcard > header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .pcard > header .lhs{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .pcard h3{color:var(--ink)}
+  .pcard .verd{color:var(--ink-soft);margin:12px 0 0;max-width:var(--measure);font-size:15.5px}
+
+  .subhead{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+           color:var(--accent);margin:22px 0 12px;display:flex;align-items:center;gap:10px}
+  .subhead::after{content:"";flex:1;height:1px;background:var(--rule-soft)}
+
+  ul.str{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+  ul.str li{position:relative;padding-left:22px;color:var(--ink-soft);font-size:15px}
+  ul.str li::before{content:"";position:absolute;left:2px;top:9px;width:8px;height:8px;border-radius:50%;
+       background:var(--sev-low)}
+
+  .issues{display:grid;gap:14px;margin-top:4px}
+  .issue{display:grid;grid-template-columns:auto 1fr;gap:14px;padding:15px 16px;border-radius:12px;
+         background:var(--panel-2);border-left:3px solid var(--sev-med)}
+  .issue.crit{border-left-color:var(--sev-crit)}
+  .issue.high{border-left-color:var(--sev-high)}
+  .issue.med{border-left-color:var(--sev-med)}
+  .issue.low{border-left-color:var(--sev-low)}
+  .sev{align-self:start;font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.1em;
+       text-transform:uppercase;padding:5px 8px;border-radius:6px;white-space:nowrap;line-height:1}
+  .sev.crit{background:var(--sev-crit);color:#fff}
+  .sev.high{background:var(--sev-high);color:#3A2A12}
+  .sev.med{background:var(--sev-med);color:#3A2A12}
+  .sev.low{background:var(--sev-low);color:#22301a}
+  .issue .body{min-width:0}
+  .issue .body p{margin:0}
+  .issue .what{font-size:15px;color:var(--ink)}
+  .issue .fix{margin-top:8px;font-size:14px;color:var(--ink-soft)}
+  .issue .fix b{color:var(--accent);font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+       text-transform:uppercase;font-weight:600}
+  code,.ln{font-family:var(--mono);font-size:.86em;background:var(--code-bg);color:var(--code-ink);
+       padding:2px 6px;border-radius:5px;white-space:nowrap}
+  .ln{color:var(--accent);background:transparent;padding:0;font-size:12px}
+  pre{margin:8px 0 0;background:var(--code-bg);color:var(--code-ink);padding:12px 14px;border-radius:10px;
+      overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.55}
+
+  /* ---- Contrast table ---- */
+  .ctable-wrap{overflow-x:auto;margin-top:14px;border-radius:12px}
+  table.ct{width:100%;border-collapse:collapse;font-size:13.5px;min-width:460px}
+  table.ct th,table.ct td{padding:9px 14px;text-align:left;border-bottom:1px solid var(--rule-soft)}
+  table.ct thead th{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+       color:var(--ink-mut);font-weight:600}
+  table.ct td.r{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono)}
+  .pass{color:var(--sev-low);font-weight:700}
+  .fail{color:var(--sev-crit);font-weight:700}
+
+  /* ---- Theme toggle ---- */
+  .toggle{position:fixed;top:16px;right:16px;z-index:50;font-family:var(--mono);font-size:11px;
+          letter-spacing:.1em;text-transform:uppercase;background:var(--panel);color:var(--ink-soft);
+          border:1px solid var(--rule);border-radius:999px;padding:8px 14px;cursor:pointer;
+          box-shadow:var(--card-shadow)}
+  .toggle:hover{color:var(--accent)}
+  :focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+  footer{padding:44px 0 80px;border-top:1px solid var(--rule);color:var(--ink-mut);font-size:13px}
+  footer .eyebrow{margin-bottom:10px}
+
+  @media (max-width:600px){
+    .issue{grid-template-columns:1fr}
+    .sev{justify-self:start}
+    section{padding:40px 0}
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .pcard,.verdict{animation:rise .5s ease both}
+    @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  }
+</style>
+
+<button class="toggle" id="themeBtn" aria-label="Skift lyst/mørkt tema">◐ Tema</button>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="kicker">
+      <svg class="spud" viewBox="0 0 32 32" aria-hidden="true"><ellipse cx="16" cy="17" rx="12" ry="10" fill="var(--accent)"/><circle cx="11" cy="14" r="1.4" fill="var(--brun)"/><circle cx="20" cy="13" r="1.2" fill="var(--brun)"/><circle cx="17" cy="20" r="1.3" fill="var(--brun)"/><circle cx="23" cy="19" r="1" fill="var(--brun)"/></svg>
+      <span class="eyebrow">UI / UX-audit · Karltoffel</span>
+    </div>
+    <h1>Tilbudsmotor v1</h1>
+    <p class="lede">En rigoristisk gennemgang af 5-trins tilbudsflowet mod 8 UI- og 4 UX-principper. Instinkterne er i topklasse — gravesekvensen, fokus-behandlingen, det brun/gul-bærende look. Det der mangler, er token-laget der gør instinkterne håndhævelige, og et sæt tilgængelighedsbrud der lige nu spærrer for AA.</p>
+    <div class="meta">
+      <div><b>Genstand</b>prototype/karltoffel-tilbudsmotor-v1.html</div>
+      <div><b>Dato</b>2026-07-07</div>
+      <div><b>Metode</b>WCAG 2.x-beregnet · kode-verificeret</div>
+      <div><b>Kritiske fund</b>6</div>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="num">00</span><h2>Sammenfatning</h2></div>
+    <p class="sec-intro">Brandet gør et tungt løft gratis: brun/gul giver 10:1+ kontrast på hver overskrift og label. Tre ting spærrer for A-niveau.</p>
+
+    <div class="verdict">
+      <h3>Hvad der gater prototypen</h3>
+      <ol>
+        <li><b>Rene fejl, ikke smag.</b> Servicerækkens grid har fem børn i fire kolonner — prisen, hele pointen med en prismotor, falder ned i en implicit anden række på desktop. Trin 3 er en envejsdør uden persistens. Man kan sende et tilbud på 0 kr for nul services.</li>
+        <li><b>WCAG AA-brud.</b> Adresse-autocomplete har nul tastaturunderstøttelse — ikke én <code>keydown</code> i hele filen. Den løbende pris annonceres aldrig til skærmlæsere. Formularfejl er lydløse.</li>
+        <li><b>Manglende token-lag.</b> Næsten hver craft-issue stammer fra håndtastede værdier: fire hardkodede neutraler uden for <code>:root</code>, seks border-radius-værdier i et 10px-bånd, og <code>opacity</code> brugt som semantisk dæmper — som selv forårsager flere kontrastbrud.</li>
+      </ol>
+    </div>
+
+    <div class="scorewrap">
+      <table class="score">
+        <thead><tr><th>Kategori</th><th>Princip</th><th class="g">Karakter</th></tr></thead>
+        <tbody>
+          <tr><td class="cat">UI</td><td class="principle">Balance</td><td class="g"><span class="grade g-c">C+</span></td></tr>
+          <tr><td class="cat">UI</td><td class="principle">Kontrast</td><td class="g"><span class="grade g-b">B</span></td></tr>
+          <tr><td class="cat">UI</td><td class="principle">Emphasis</td><td class="g"><span class="grade g-b">B</span></td></tr>
+          <tr><td class="cat">UI</td><td class="principle">Hierarki</td><td class="g"><span class="grade g-b">B−</span></td></tr>
+          <tr><td class="cat">UI</td><td class="principle">Proportion</td><td class="g"><span class="grade g-c">C</span></td></tr>
+          <tr><td class="cat">UI</td><td class="principle">Repetition</td><td class="g"><span class="grade g-b">B−</span></td></tr>
+          <tr><td class="cat">UI</td><td class="principle">White Space</td><td class="g"><span class="grade g-b">B</span></td></tr>
+          <tr><td class="cat">UI</td><td class="principle">Movement</td><td class="g"><span class="grade g-b">B+</span></td></tr>
+          <tr><td class="cat">UX</td><td class="principle">Familiarity</td><td class="g"><span class="grade g-b">B</span></td></tr>
+          <tr><td class="cat">UX</td><td class="principle">Consistency</td><td class="g"><span class="grade g-c">C</span></td></tr>
+          <tr><td class="cat">UX</td><td class="principle">Forgiveness</td><td class="g"><span class="grade g-d">D+</span></td></tr>
+          <tr><td class="cat">UX</td><td class="principle">Accessibility</td><td class="g"><span class="grade g-d">D</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="num">01</span><h2>Prioriteret triage</h2></div>
+    <p class="sec-intro">Rækkefølgen er valgt efter afkast: rene bugs og AA-brud før craft. De første seks er kritiske.</p>
+    <div class="verdict" style="margin-top:24px">
+      <ol>
+        <li><b>Ret grid-fejlen i <code>.row</code></b> — fem børn, fire kolonner <span class="ln">L95</span>. Tilføj femte <code>auto</code>-spor. <em>(Kritisk · layout)</em></li>
+        <li><b>Combobox-tastatur + Escape</b> på adressefeltet — WAI-ARIA APG-mønster. <em>(Kritisk · a11y)</em></li>
+        <li><b>aria-live på prisen</b> — én debounced region: "1.240 kr pr. måned, 6 services". <em>(Kritisk · WCAG 4.1.3)</em></li>
+        <li><b>role="alert" + aria-invalid + fokus</b> på formularfejl. <em>(Kritisk · a11y)</em></li>
+        <li><b>"Ret adresse"-udgang fra trin 3</b> uden at nulstille state. <em>(Kritisk · forgiveness)</em></li>
+        <li><b>Ret <code>.err</code>-kontrasten</b> — gul-på-rød er 4,1:1. <em>(Kritisk · WCAG 1.4.3)</em></li>
+        <li><b>Deaktivér CTA ved 0 services</b> — stop et tomt tilbud. <em>(Høj)</em></li>
+        <li><b>Fokusstyring i <code>visStep()</code></b> — flyt fokus til trinnets overskrift. <em>(Høj · a11y)</em></li>
+        <li><b>Stop <code>opacity</code> som semantisk dæmper</b> — retter tre kontrastbrud på én gang. <em>(Høj · a11y)</em></li>
+        <li><b>Tokenisér skyggepaletten</b> og kollaps radius/type-skalaen. <em>(Høj · craft)</em></li>
+        <li><b>Tilføj en trinindikator</b> — orientering i et 5-trins flow. <em>(Høj · familiarity)</em></li>
+        <li><b>Enter skal virke</b> — pak trin 4 i <code>&lt;form&gt;</code>; Enter vælger første forslag på trin 1. <em>(Høj · familiarity)</em></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="num">02</span><h2>UI</h2></div>
+    <p class="sec-intro">Otte principper for visuel komposition — balance, kontrast, emphasis, hierarki, proportion, repetition, white space, movement.</p>
+    <div class="cards">
+
+      <!-- BALANCE -->
+      <article class="pcard">
+        <header><div class="lhs"><h3>Balance</h3><span class="grade g-c">C+</span></div></header>
+        <p class="verd">Disciplineret symmetrisk skelet undermineret af en strukturel grid-defekt.</p>
+        <div class="subhead">Styrker</div>
+        <ul class="str">
+          <li>Hero er lærebogs-symmetrisk-aksial: centreret h1, sub kappet ved 520px, adr-wrap ved 640px i 1040px-kolonnen.</li>
+          <li>Header er ren asymmetrisk balance — 200px logomasse mod let pill-badge.</li>
+          <li><code>.cta-bar</code> deler samme 1040px-skinne som <code>main</code>; 120px bund-reserve dækker aldrig sidste række.</li>
+        </ul>
+        <div class="subhead">Issues</div>
+        <div class="issues">
+          <div class="issue crit"><span class="sev crit">Kritisk</span><div class="body">
+            <p class="what">Desktop-gridet er brudt: fem børn, fire spor. <code>.row</code> definerer <code>auto 1fr auto auto</code> <span class="ln">L95</span>, men JS tilføjer chk · navn · qty · freq · <b style="color:var(--sev-crit)">pris</b> — prisen flyder ned i en implicit anden række, kolonne 1.</p>
+            <p class="fix"><b>Fix</b><pre>.row{grid-template-columns:auto 1fr auto auto auto}
+.row .qty{justify-self:end}</pre></p>
+          </div></div>
+          <div class="issue high"><span class="sev high">Høj</span><div class="body">
+            <p class="what">Mobil-remap <span class="ln">L110</span> laver en død højre-rende (64px input alene i <code>1fr</code>) og inverteret vægt — tunge steppere nederst-venstre, pris nederst-højre.</p>
+            <p class="fix"><b>Fix</b> Areas <code>"chk navn" "chk qty" "chk freq" "pris pris"</code> med pris som højrestillet fodlinje.</p>
+          </div></div>
+          <div class="issue med"><span class="sev med">Medium</span><div class="body">
+            <p class="what">Sticky <code>.topbar</code> + fixed <code>.cta-bar</code> klemmer indholdsbåndet på mobil til ~250px.</p>
+            <p class="fix"><b>Fix</b> Kollaps sticky-kortet til adr-linje + "Pris pr. md" på mobil.</p>
+          </div></div>
+          <div class="issue low"><span class="sev low">Lav</span><div class="body">
+            <p class="what"><code>.regnestrimmel</code> giver en forældreløs celle på mobil (3 i <code>repeat(2,1fr)</code>) <span class="ln">L114</span>.</p>
+            <p class="fix"><b>Fix</b> <code>div:last-child{grid-column:1/-1}</code> som bevidst totallinje.</p>
+          </div></div>
+        </div>
+      </article>
+
+      <!-- KONTRAST -->
+      <article class="pcard">
+        <header><div class="lhs"><h3>Kontrast</h3><span class="grade g-b">B</span></div></header>
+        <p class="verd">Det brun/gul-bærende par er glimrende (10:1+), men fejlbanner, placeholder og fravalgte rækker fejler alle AA — og <code>opacity</code>-vanen er skyld i det.</p>
+        <div class="ctable-wrap">
+          <table class="ct">
+            <thead><tr><th>Par</th><th class="r">Forhold</th><th class="r">Krav</th><th>Resultat</th></tr></thead>
+            <tbody>
+              <tr><td>Ivory på brun (brødtekst)</td><td class="r">11,2:1</td><td class="r">4,5</td><td class="pass">Pass</td></tr>
+              <tr><td>Gul på brun (h1, labels)</td><td class="r">10,2:1</td><td class="r">4,5</td><td class="pass">Pass</td></tr>
+              <tr><td>Gul på rød (<code>.err</code>, 14px)</td><td class="r">4,1:1</td><td class="r">4,5</td><td class="fail">Fail</td></tr>
+              <tr><td>Placeholder på ivory (19px)</td><td class="r">4,0:1</td><td class="r">4,5</td><td class="fail">Fail</td></tr>
+              <tr><td><code>.row.off</code> navn (opacity .45)</td><td class="r">≈3,3:1</td><td class="r">4,5</td><td class="fail">Fail</td></tr>
+              <tr><td>Bronze-kant på brun (<code>.btn-nej</code>)</td><td class="r">2,6:1</td><td class="r">3,0</td><td class="fail">Fail</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="subhead">Issues</div>
+        <div class="issues">
+          <div class="issue crit"><span class="sev crit">Kritisk</span><div class="body">
+            <p class="what"><code>.kontakt .err</code> er gul-på-rød ved 4,1:1 <span class="ln">L131</span> — den ene besked brugeren skal kunne læse når noget går galt, er den der fejler AA.</p>
+            <p class="fix"><b>Fix</b> Ivory panel + rød tekst + rød venstrekant: <code>color:#B03A28;border-left:4px solid var(--roed)</code> (≈5,6:1).</p>
+          </div></div>
+          <div class="issue high"><span class="sev high">Høj</span><div class="body">
+            <p class="what"><code>.row.off{opacity:.45}</code> <span class="ln">L96</span> gør stadig-interaktive rækker ulæselige (navn ≈3,3:1, note ≈2,7:1).</p>
+            <p class="fix"><b>Fix</b> Cap ved <code>opacity:.7</code>; signalér "off" via checkbox + dæmpet baggrund, ikke global alpha.</p>
+          </div></div>
+          <div class="issue med"><span class="sev med">Medium</span><div class="body">
+            <p class="what">Placeholder <code>#8a7d5e</code> er 4,0:1 på funnelens vigtigste felt <span class="ln">L46</span>.</p>
+            <p class="fix"><b>Fix</b> <code>#6e6349</code> (≈5,4:1).</p>
+          </div></div>
+          <div class="issue low"><span class="sev low">Lav</span><div class="body">
+            <p class="what"><code>.demo-hint</code>/<code>.gaps</code> består, men dobbelt-dæmper med både lille størrelse og fade.</p>
+            <p class="fix"><b>Fix</b> Vælg én løftestang — 13px ved fuld farve, ikke begge.</p>
+          </div></div>
+        </div>
+      </article>
+
+      <!-- EMPHASIS -->
+      <article class="pcard">
+        <header><div class="lhs"><h3>Emphasis</h3><span class="grade g-b">B</span></div></header>
+        <p class="verd">Trin 1, 2 og 4 har hver ét umiskendeligt fokuspunkt; trin 3 hedger.</p>
+        <div class="subhead">Styrker</div>
+        <ul class="str">
+          <li>Trin 1 er en model-single-focal-skærm: ét 640px-input på 11:1 mørk grund.</li>
+          <li><code>.cta-bar</code>-inversionen gør konverteringsknappen til det eneste solid-brun-på-gul element på skærmen.</li>
+          <li>Gravesekvensen forpligter sig fuldt — fuld-viewport, én besked, én bar.</li>
+        </ul>
+        <div class="subhead">Issues</div>
+        <div class="issues">
+          <div class="issue high"><span class="sev high">Høj</span><div class="body">
+            <p class="what">Trin 3's fokus splittes tre veje: sticky topbar, 23px <code>#t-pris</code> og gul CTA-bar med 24px <code>#cta-pris</code> — prisen printes to gange i næsten samme størrelse i hver sin ende.</p>
+            <p class="fix"><b>Fix</b> Lad CTA-baren eje tallet; dæmp <code>.regnestrimmel span</code> til 17px.</p>
+          </div></div>
+          <div class="issue high"><span class="sev high">Høj</span><div class="body">
+            <p class="what">Trin 1 har ingen synlig handlingsaffordance — intet submit, ingen pil/lup; fremdrift afhænger af async-listen <span class="ln">L47</span>.</p>
+            <p class="fix"><b>Fix</b> Absolut-positioneret gul pileknap i <code>.adr-wrap</code>, 48px — signalerer "her sker noget" før man taster.</p>
+          </div></div>
+          <div class="issue med"><span class="sev med">Medium</span><div class="body">
+            <p class="what">Rækkepriser vinder ikke deres egen række: <code>.pris b</code> 17px = <code>.navn b</code> 17px <span class="ln">L107</span>. I en prismotor bør tallet slå navneordet.</p>
+            <p class="fix"><b>Fix</b> <code>.row .pris b{font-size:20px;color:var(--gul)}</code>.</p>
+          </div></div>
+          <div class="issue med"><span class="sev med">Medium</span><div class="body">
+            <p class="what">Freq-stepperne er rækkens højeste elementer — 18 gule blokke over 9 rækker <span class="ln">L103</span>.</p>
+            <p class="fix"><b>Fix</b> Outline-stil; reservér solid gul til primære CTA'er.</p>
+          </div></div>
+        </div>
+      </article>
+
+      <!-- HIERARKI -->
+      <article class="pcard">
+        <header><div class="lhs"><h3>Hierarki</h3><span class="grade g-b">B−</span></div></header>
+        <p class="verd">Ren type-skala på trin 1→2→4→5, men trin 3 — pengeskærmen — er det eneste trin uden synlig overskrift.</p>
+        <div class="subhead">Styrker</div>
+        <ul class="str">
+          <li>Sammenhængende clamp-stige: h1 34–64 → verify 26–40 → kontakt 26–38 → tak 30–46.</li>
+          <li><code>.fakta</code> label/værdi-inversion (12px/500 over 16px/700) er forbilledlig.</li>
+          <li>Rækkens læserækkefølge matcher beslutningsrækkefølgen: inkludér? → hvad? → hvor meget? → hvor tit? → pris.</li>
+        </ul>
+        <div class="subhead">Issues</div>
+        <div class="issues">
+          <div class="issue high"><span class="sev high">Høj</span><div class="body">
+            <p class="what">Trin 3 har ingen synlig overskrift: <code>#h2l</code> skubbet off-screen (<code>left:-9999px</code>) <span class="ln">L209</span>, så prismotorens hele værdiforslag åbner koldt med et datakort.</p>
+            <p class="fix"><b>Fix</b> Render overskriften i snaga-unicase/gul, fx "Din have, regnet ud".</p>
+          </div></div>
+          <div class="issue med"><span class="sev med">Medium</span><div class="body">
+            <p class="what"><code>.regnestrimmel b</code> forker fra <code>.fakta b</code> — samme kort, samme rolle, to letter-spacing-værdier <span class="ln">L85/88</span>.</p>
+            <p class="fix"><b>Fix</b> Én regel: <code>.fakta div b,.regnestrimmel div b{letter-spacing:.04em}</code>.</p>
+          </div></div>
+          <div class="issue med"><span class="sev med">Medium</span><div class="body">
+            <p class="what"><code>.demo-hint</code> forurener summary-kortets hierarki inde i sticky-arealet <span class="ln">L226</span>.</p>
+            <p class="fix"><b>Fix</b> Flyt ned til <code>.gaps</code> — de to disclaimere er samme stemme.</p>
+          </div></div>
+          <div class="issue low"><span class="sev low">Lav</span><div class="body">
+            <p class="what"><code>#dig-msg</code> fast 26px uden clamp <span class="ln">L61</span> kan wrappe grimt for de længere beskeder.</p>
+            <p class="fix"><b>Fix</b> <code>clamp(20px,5vw,26px)</code>.</p>
+          </div></div>
+        </div>
+      </article>
+
+      <!-- PROPORTION -->
+      <article class="pcard">
+        <header><div class="lhs"><h3>Proportion</h3><span class="grade g-c">C</span></div></header>
+        <p class="verd">De store greb er rigtige, men værdiskalaen under er ad-hoc drift, ikke et system.</p>
+        <div class="subhead">Styrker</div>
+        <ul class="str">
+          <li>Hero H1/sub ~3,5:1 display-forhold passer til unicase-fonten.</li>
+          <li>200px logo vs 12px badge er en korrekt dominansrelation.</li>
+          <li><code>#adr-input</code> er passende overdimensioneret — <em>the</em> interaktion på trin 1.</li>
+        </ul>
+        <div class="subhead">Issues</div>
+        <div class="issues">
+          <div class="issue high"><span class="sev high">Høj</span><div class="body">
+            <p class="what">Seks border-radius-værdier i et 10px-bånd (8/10/12/14/16/18) er ikke en skala — nabotrin på 2px læses som støj.</p>
+            <p class="fix"><b>Fix</b> Tre tokens: <code>--r-sm:8px</code>, <code>--r-md:12px</code>, <code>--r-lg:16px</code> + <code>999px</code> pills.</p>
+          </div></div>
+          <div class="issue high"><span class="sev high">Høj</span><div class="body">
+            <p class="what">Brøk- og off-skala-fontstørrelser: 12,5px, 11,5px, 14,5px — og 23px 1px under CTA'ens 24px for <em>samme</em> pris-figur.</p>
+            <p class="fix"><b>Fix</b> Type-skala 12/13/14/16/17/19/24; map 23→24.</p>
+          </div></div>
+          <div class="issue med"><span class="sev med">Medium</span><div class="body">
+            <p class="what">Input-padding afviger 25% mellem trin 1 (<code>20px 22px</code>) og trin 4 (<code>15px 16px</code>) — tyndere ved konverteringen.</p>
+            <p class="fix"><b>Fix</b> <code>.kontakt input{padding:16px 18px}</code>.</p>
+          </div></div>
+          <div class="issue low"><span class="sev low">Lav</span><div class="body">
+            <p class="what">Freq-knapper 34px fejler både gridet og 44px touch-målet <span class="ln">L103</span>.</p>
+            <p class="fix"><b>Fix</b> 40–44px, radius <code>--r-sm</code>.</p>
+          </div></div>
+        </div>
+      </article>
+
+      <!-- REPETITION -->
+      <article class="pcard">
+        <header><div class="lhs"><h3>Repetition</h3><span class="grade g-b">B−</span></div></header>
+        <p class="verd">Stærke motiver (gul-på-brun, versal-labels, pills), men knapsystemet forker og fire skygge-hexes omgår tokens.</p>
+        <div class="subhead">Styrker</div>
+        <ul class="str">
+          <li>Label-motivet (versal + letter-spacing + gul/bronze) går igen fem steder — en genkendelig systemstemme.</li>
+          <li>Ét globalt <code>:focus-visible</code> — hvert element arver samme gule fokus.</li>
+          <li>Ja/nej-parret genbrugt verbatim på trin 4 — samme beslutningsgrammatik, to gange.</li>
+        </ul>
+        <div class="subhead">Issues</div>
+        <div class="issues">
+          <div class="issue high"><span class="sev high">Høj</span><div class="body">
+            <p class="what">Fire hardkodede neutraler er en skyggepalette: <code>#5A4322</code> (kort), <code>#3A2A12</code> (dig-bar), <code>#E4DFC8</code> (kanter), <code>#8A7D5E</code> — bærende, men ingen i <code>:root</code>.</p>
+            <p class="fix"><b>Fix</b> Promovér til <code>--brun-lys/--brun-moerk/--ivory-dim/--ivory-mut</code> og opdatér designsystemet.</p>
+          </div></div>
+          <div class="issue high"><span class="sev high">Høj</span><div class="body">
+            <p class="what"><code>.btn-cta</code> <span class="ln">L123</span> er en fork af <code>.btn</code> <span class="ln">L73</span>: <code>15px 26px</code> vs <code>16px 30px</code>. Funnelens vigtigste knap bruger ikke knapsystemet.</p>
+            <p class="fix"><b>Fix</b> <code>class="btn btn-cta"</code>, lad modifieren kun bære farve.</p>
+          </div></div>
+          <div class="issue med"><span class="sev med">Medium</span><div class="body">
+            <p class="what">Letter-spacing på versal-motivet har fire værdier (.08/.1/.12/.04em) — ét motiv, ét tracking.</p>
+            <p class="fix"><b>Fix</b> Ét <code>--track-label:.08em</code> overalt.</p>
+          </div></div>
+          <div class="issue low"><span class="sev low">Lav</span><div class="body">
+            <p class="what"><code>.dig-bar</code> bruger <code>99px</code> hvor alt andet bruger <code>999px</code> <span class="ln">L63</span> — en typo-formet inkonsistens.</p>
+            <p class="fix"><b>Fix</b> <code>999px</code> eller pill-tokenet.</p>
+          </div></div>
+        </div>
+      </article>
+
+      <!-- WHITE SPACE -->
+      <article class="pcard">
+        <header><div class="lhs"><h3>White Space</h3><span class="grade g-b">B</span></div></header>
+        <p class="verd">Hero og terminaltrin ånder smukt; trin 3 er hvor luften slipper op.</p>
+        <div class="subhead">Styrker</div>
+        <ul class="str">
+          <li>Hero <code>9vh/12vh</code> med 640px-blok — en enkelt-fokus-scene med generøs, asymmetrisk luft.</li>
+          <li>Measure-kontrol via <code>max-width:520/560</code> — ikke bare container-bredde.</li>
+          <li>120px bund-reserve så den fixede bar aldrig overlapper sidste række.</li>
+        </ul>
+        <div class="subhead">Issues</div>
+        <div class="issues">
+          <div class="issue high"><span class="sev high">Høj</span><div class="body">
+            <p class="what">Sticky <code>.topbar</code> er en pladssluger på trin 3 (~220–260px pinnet), mens CTA-baren pinner bunden — arbejdszonen for de 9 rækker bliver ~350px.</p>
+            <p class="fix"><b>Fix</b> Kun en slank summary-strimmel skal sticke; drop top-sticky på mobil.</p>
+          </div></div>
+          <div class="issue med"><span class="sev med">Medium</span><div class="body">
+            <p class="what"><code>.losning{padding:28px 0 0}</code> <span class="ln">L80</span> mangler top-luft vs 6–12vh på hvert andet trin.</p>
+            <p class="fix"><b>Fix</b> <code>6vh</code> for paritet.</p>
+          </div></div>
+          <div class="issue med"><span class="sev med">Medium</span><div class="body">
+            <p class="what"><code>.row</code>-tætheden underbetjener de fire kolonner; på mobil læses qty/freq/pris som én udifferentieret blok.</p>
+            <p class="fix"><b>Fix</b> <code>padding:18px 20px</code> desktop; hairline-separator på mobil-fodlinjen.</p>
+          </div></div>
+          <div class="issue low"><span class="sev low">Lav</span><div class="body">
+            <p class="what">4px optiske margener er spredte magiske tal (L44/52/93/116).</p>
+            <p class="fix"><b>Fix</b> Ét <code>--inset-text:4px</code>.</p>
+          </div></div>
+        </div>
+      </article>
+
+      <!-- MOVEMENT -->
+      <article class="pcard">
+        <header><div class="lhs"><h3>Movement</h3><span class="grade g-b">B+</span></div></header>
+        <p class="verd">Bevægelse er formålsbestemt, on-brand og mest tilgængelig; fejlene er orienteringshuller og to bogstavelige bugs.</p>
+        <div class="subhead">Styrker</div>
+        <ul class="str">
+          <li><code>#dig</code>-overlayet er en signatur gjort rigtigt: digbob −9°→7° + 5 tekster + progress bar — læses som <em>gravning</em>, ikke generisk spin.</li>
+          <li>Reduced-motion håndteres i <em>begge</em> lag — CSS-kill-switch <em>og</em> JS-check i <code>koerGravning</code>. Sjældent set.</li>
+          <li><code>stepin</code> er retningsbestemt (24px translateX) — wizarden "avancerer" konsistent til venstre.</li>
+        </ul>
+        <div class="subhead">Issues</div>
+        <div class="issues">
+          <div class="issue high"><span class="sev high">Høj</span><div class="body">
+            <p class="what"><code>html{scroll-behavior:smooth}</code> <span class="ln">L18</span> neutraliseres ikke i reduced-motion-blokken — <code>animation</code>/<code>transition</code>-overrides rører ikke scroll.</p>
+            <p class="fix"><b>Fix</b> <code>html{scroll-behavior:auto}</code> i media queryen.</p>
+          </div></div>
+          <div class="issue med"><span class="sev med">Medium</span><div class="body">
+            <p class="what">Død kode: <code>"instant" in window ? "instant" : "auto"</code> <span class="ln">L418</span> er altid <code>auto</code>, så trinskift smooth-scroller og slås visuelt med slide-in.</p>
+            <p class="fix"><b>Fix</b> <code>window.scrollTo({top:0, behavior:"instant"})</code>.</p>
+          </div></div>
+          <div class="issue med"><span class="sev med">Medium</span><div class="body">
+            <p class="what">Ingen trinindikator — slide-in gør orienteringsarbejde den ikke kan afslutte.</p>
+            <p class="fix"><b>Fix</b> Lille versal-progress-række under headeren.</p>
+          </div></div>
+          <div class="issue low"><span class="sev low">Lav</span><div class="body">
+            <p class="what"><code>.cta-bar</code> teleporterer ind (<code>display:none→block</code>) <span class="ln">L118</span> — det vigtigste element på trin 3 popper bare frem.</p>
+            <p class="fix"><b>Fix</b> <code>translateY(100%)→0</code> over 250ms, reduced-motion-guarded.</p>
+          </div></div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="num">03</span><h2>UX</h2></div>
+    <p class="sec-intro">Fire principper for oplevelsen — familiarity, consistency, forgiveness, accessibility.</p>
+    <div class="cards">
+
+      <!-- FAMILIARITY -->
+      <article class="pcard">
+        <header><div class="lhs"><h3>Familiarity</h3><span class="grade g-b">B</span></div></header>
+        <p class="verd">Læner sig op ad velafprøvede e-commerce-mønstre, men udelader wizardens mest velkendte element (progress) og honorerer aldrig Enter.</p>
+        <div class="subhead">Styrker</div>
+        <ul class="str">
+          <li>Adresse-først-autocomplete er det mønster danskere kender fra rejseplanen/boliga.</li>
+          <li>Sticky bund-CTA med løbende total — direkte fra mobil-checkout.</li>
+          <li>Dig-overlayet læses som en branded loader (men er en fabrikeret 3,1s-forsinkelse — tåleligt ved 3s, lad det ikke vokse).</li>
+        </ul>
+        <div class="subhead">Issues</div>
+        <div class="issues">
+          <div class="issue high"><span class="sev high">Høj</span><div class="body">
+            <p class="what">Ingen trin-/progress-indikator i et 5-trins flow — den #1 årsag til wizard-frafald.</p>
+            <p class="fix"><b>Fix</b> "Trin 2 af 5" drevet fra <code>visStep()</code>.</p>
+          </div></div>
+          <div class="issue high"><span class="sev high">Høj</span><div class="body">
+            <p class="what">Enter gør intet nogen steder — hverken trin 1 eller 4 er en <code>&lt;form&gt;</code>. Bryder 30 års muskelhukommelse.</p>
+            <p class="fix"><b>Fix</b> Pak trin 4 i <code>&lt;form&gt;</code>; Enter på trin 1 vælger første forslag.</p>
+          </div></div>
+          <div class="issue med"><span class="sev med">Medium</span><div class="body">
+            <p class="what"><code>fortsaet()</code> <span class="ln">L378</span> muterer brugerens forespørgsel i stedet for at vælge — magisk.</p>
+            <p class="fix"><b>Fix</b> Stil de rækker som "Fortsæt: Sundvej …".</p>
+          </div></div>
+          <div class="issue low"><span class="sev low">Lav</span><div class="body">
+            <p class="what">"Besøg om året" = <code>max(freq)</code> <span class="ln">L308</span>; abonnementsvante brugere forventer additivt.</p>
+            <p class="fix"><b>Fix</b> Forklar bundlingen i UI-copy.</p>
+          </div></div>
+        </div>
+      </article>
+
+      <!-- CONSISTENCY -->
+      <article class="pcard">
+        <header><div class="lhs"><h3>Consistency</h3><span class="grade g-c">C</span></div></header>
+        <p class="verd">Det visuelle system er disciplineret, men interaktionsgrammatikken driver.</p>
+        <div class="subhead">Styrker</div>
+        <ul class="str">
+          <li>Stram token-disciplin — hver farve er en var, matcher designsystemet.</li>
+          <li>Alle priser gennem to formatters (<code>kr()</code>/<code>DKK2</code>) — konsistent rounding.</li>
+          <li>Ét trinskifte-kodespor — intet trin opfører sig strukturelt anderledes.</li>
+        </ul>
+        <div class="subhead">Issues</div>
+        <div class="issues">
+          <div class="issue high"><span class="sev high">Høj</span><div class="body">
+            <p class="what">Qty (rå <code>type=number</code>) vs freq (steppere) bruger to input-modeller på samme række, 16px fra hinanden — kun den ene med grænse-feedback.</p>
+            <p class="fix"><b>Fix</b> Vælg én model pr. begrænsningstype.</p>
+          </div></div>
+          <div class="issue high"><span class="sev high">Høj</span><div class="body">
+            <p class="what"><code>.btn-nej</code> betyder tre ting: afvisning ("Nej, prøv igen"), tilbage-nav ("Tilbage") og genbrugt container. Afvis-der-sletter-data deler stil med neutral tilbage.</p>
+            <p class="fix"><b>Fix</b> Distinkte behandlinger for destruktiv-afvis vs neutral-tilbage.</p>
+          </div></div>
+          <div class="issue med"><span class="sev med">Medium</span><div class="body">
+            <p class="what">Primær-CTA inverterer farver på den vigtigste skærm (gul/brun vs brun/gul) — "den gule knap fører fremad"-reglen brydes ved konverteringen. <code>.btn-cta</code>/<code>.btn-nej</code> mangler hover.</p>
+            <p class="fix"><b>Fix</b> Bevar farvelogik eller tilføj eksplicit hover-affordance.</p>
+          </div></div>
+          <div class="issue low"><span class="sev low">Lav</span><div class="body">
+            <p class="what">Pris-label-ordlyd driver — fire fraseringer for to begreber ("Pris pr. md", "/md", "kr/md", "pr. år").</p>
+            <p class="fix"><b>Fix</b> Standardisér på "/md" og "/år".</p>
+          </div></div>
+        </div>
+      </article>
+
+      <!-- FORGIVENESS -->
+      <article class="pcard">
+        <header><div class="lhs"><h3>Forgiveness</h3><span class="grade g-d">D+</span></div></header>
+        <p class="verd">Steppere clamper, API-fejl degraderer pænt, state overlever tilbage-nav — men trin 3 er en envejsdør, "Nej" sletter input, og funnelen sender glad et 0 kr-tilbud.</p>
+        <div class="subhead">Styrker</div>
+        <ul class="str">
+          <li>Freq-steppere er fuldt fejlsikrede — grænser i både handler og disabled-state.</li>
+          <li>State overlever tilbage-nav (verificeret: re-render fra muteret <code>PRODUCTS</code>).</li>
+          <li>Adresse-API-fejl fanges og falder til demo-liste + note i stedet for dødt input.</li>
+        </ul>
+        <div class="subhead">Issues</div>
+        <div class="issues">
+          <div class="issue crit"><span class="sev crit">Kritisk</span><div class="body">
+            <p class="what">Trin 3 er en envejsdør uden persistens (ingen localStorage). Viser topbaren forkert adresse, er eneste udvej en hard refresh — der nulstiller alt.</p>
+            <p class="fix"><b>Fix</b> "Ret adresse"-link i <code>.topbar</code> der kalder <code>visStep("step-adresse")</code> uden at rydde state.</p>
+          </div></div>
+          <div class="issue high"><span class="sev high">Høj</span><div class="body">
+            <p class="what">Man kan sende et tilbud for nul: fravælg alle 9 rækker → "0 kr/md · 0 services", CTA forbliver live, ingen guard på <code>r.count</code> <span class="ln">L425/428</span>.</p>
+            <p class="fix"><b>Fix</b> <code>btn-kontakt.disabled = r.count === 0</code> + microcopy.</p>
+          </div></div>
+          <div class="issue high"><span class="sev high">Høj</span><div class="body">
+            <p class="what">"Nej, prøv igen" sletter arbejdet: <code>adrInput.value = ""</code> <span class="ln">L424</span> — 20+ tastede tegn væk i stedet for at returnere til forespørgslen.</p>
+            <p class="fix"><b>Fix</b> Bevar input, genåbn listen.</p>
+          </div></div>
+          <div class="issue med"><span class="sev med">Medium</span><div class="body">
+            <p class="what">E-mail-validering er <code>indexOf("@") &lt; 1</code> <span class="ln">L430</span> — accepterer <code>a@</code>, <code>x@y</code>; én generisk fejl uden at pege på hvilket felt.</p>
+            <p class="fix"><b>Fix</b> <code>input.checkValidity()</code> + <code>aria-invalid</code> + fokus.</p>
+          </div></div>
+          <div class="issue med"><span class="sev med">Medium</span><div class="body">
+            <p class="what"><code>adrFejl</code> er en permanent faldlem <span class="ln">L330/343/353</span> — ét netværksblip og det rigtige API prøves aldrig igen i sessionen.</p>
+            <p class="fix"><b>Fix</b> Retry efter N sekunder i stedet for at latche.</p>
+          </div></div>
+        </div>
+      </article>
+
+      <!-- ACCESSIBILITY -->
+      <article class="pcard">
+        <header><div class="lhs"><h3>Accessibility</h3><span class="grade g-d">D</span></div></header>
+        <p class="verd">Fundamentet viser reel intention, men autocomplete har nul tastatur-wiring, prisen annonceres aldrig, fejl er lydløse, og fokus tabes ved hvert trinskift. Flere WCAG 2.1/2.2 AA-brud.</p>
+        <div class="subhead">Styrker</div>
+        <ul class="str">
+          <li>Globalt <code>:focus-visible</code> (3px gul) — bedre end de fleste produktionssites.</li>
+          <li>Reduced-motion i CSS <em>og</em> JS. Programmatiske navne forsøgt overalt.</li>
+          <li><code>role="status" aria-live="polite"</code> på dig-overlayet; <code>lang="da"</code> + sr-only h2.</li>
+        </ul>
+        <div class="subhead">Issues</div>
+        <div class="issues">
+          <div class="issue crit"><span class="sev crit">Kritisk</span><div class="body">
+            <p class="what">Autocomplete er en listbox kun af navn: <code>role="listbox"</code>/<code>option</code> er stemplet på, men der er <b style="color:var(--sev-crit)">ikke én <code>keydown</code></b> i filen — ingen Arrow/Enter/Escape, ingen <code>combobox</code>/<code>aria-expanded</code>/<code>aria-activedescendant</code>. <span class="ln">WCAG 2.1.1 · 4.1.2 · 1.4.13</span></p>
+            <p class="fix"><b>Fix</b> Implementér WAI-ARIA APG combobox-mønsteret.</p>
+          </div></div>
+          <div class="issue crit"><span class="sev crit">Kritisk</span><div class="body">
+            <p class="what">Prisen annonceres aldrig: <code>#t-pris</code>/<code>#cta-pris</code> opdateres via <code>textContent</code> uden <code>aria-live</code> <span class="ln">L518–522</span>. Hele kalkulatorens pointe er usynlig for skærmlæsere. <span class="ln">WCAG 4.1.3</span></p>
+            <p class="fix"><b>Fix</b> Én debounced <code>aria-live="polite" aria-atomic="true"</code>-region: "1.240 kr pr. måned, 6 services".</p>
+          </div></div>
+          <div class="issue crit"><span class="sev crit">Kritisk</span><div class="body">
+            <p class="what">Formularfejlen er lydløs: <code>#k-err</code> vises via class-toggle uden <code>role="alert"</code>, uden <code>aria-invalid</code>, uden fokusflyt <span class="ln">L430–431</span>. <span class="ln">WCAG 4.1.3 · 3.3.1</span></p>
+            <p class="fix"><b>Fix</b> <code>role="alert"</code> + markér fejlfelt + <code>focus()</code>.</p>
+          </div></div>
+          <div class="issue high"><span class="sev high">Høj</span><div class="body">
+            <p class="what">Fokus tabes til <code>&lt;body&gt;</code> ved hvert trinskift <span class="ln">L414–421</span>; tastaturbrugere genstarter tabbing fra toppen. <span class="ln">WCAG 2.4.3</span></p>
+            <p class="fix"><b>Fix</b> <code>tabindex="-1"</code> på hvert trins overskrift + <code>.focus()</code> i <code>visStep()</code>.</p>
+          </div></div>
+          <div class="issue med"><span class="sev med">Medium</span><div class="body">
+            <p class="what">Checkbox-labels bliver forældede: <code>aria-label</code> sættes én gang til "Fravælg/Tilvælg + navn" <span class="ln">L469</span> og opdateres aldrig, så tilstand og navn modsiger hinanden efter klik. <span class="ln">WCAG 4.1.2</span></p>
+            <p class="fix"><b>Fix</b> <code>aria-label = p.navn</code>, punktum.</p>
+          </div></div>
+          <div class="issue med"><span class="sev med">Medium</span><div class="body">
+            <p class="what">34px stepper-mål <span class="ln">L103</span> ligger under 44/48px-vejledningen på pengeskærmen; <code>aria-label</code> på plain <code>&lt;div class="logo"&gt;</code> ignoreres af AT. <span class="ln">WCAG 2.5.5</span></p>
+            <p class="fix"><b>Fix</b> 44px hit-area; <code>role="img"</code> på logoet.</p>
+          </div></div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="eyebrow">Karltoffel · UI/UX-audit</div>
+    Fremstillet mod 8 UI- og 4 UX-principper. Alle linjenumre refererer til <code>prototype/karltoffel-tilbudsmotor-v1.html</code> på analysetidspunktet. Kontrastforhold beregnet mod WCAG 2.x relativ luminans; adfærdspåstande verificeret mod kildekoden.
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var btn = document.getElementById('themeBtn');
+    var root = document.documentElement;
+    btn.addEventListener('click', function(){
+      var cur = root.getAttribute('data-theme');
+      if(!cur){ cur = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+      root.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+    });
+  })();
+</script>
